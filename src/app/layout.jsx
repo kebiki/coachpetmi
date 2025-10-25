@@ -5,12 +5,12 @@ import '@/styles/tailwind.css'
 
 export const metadata = {
   title: {
-    template: '%s - Spencer Sharp',
+    template: '%s - Coach Petmi',
     default:
-      'Spencer Sharp - Software designer, founder, and amateur astronaut',
+      'Coach Petmi - Experte Power BI & Coach Certification PL 300',
   },
   description:
-    'I’m Spencer, a software designer and entrepreneur based in New York City. I’m the founder and CEO of Planetaria, where we develop technologies that empower regular people to explore space on their own terms.',
+    'Coach Petmi est une experte Power BI et coach en certification PL 300. Avec plus de 2 ans d\'expérience et un Master en Gestion des Risques, je vous aide à maîtriser Power BI et à réussir votre certification.',
   alternates: {
     types: {
       'application/rss+xml': `${process.env.NEXT_PUBLIC_SITE_URL}/feed.xml`,

@@ -10,13 +10,13 @@ export async function GET(req) {
   }
 
   let author = {
-    name: 'Spencer Sharp',
-    email: 'spencer@planetaria.tech',
+    name: 'Coach Petmi',
+    email: 'hi@coachpetmi.com',
   }
 
   let feed = new Feed({
-    title: author.name,
-    description: 'Your blog description',
+    title: 'Coach Petmi - Experte Power BI & Coach Certification PL 300',
+    description: 'Articles et ressources pour maîtriser Power BI et réussir la certification PL 300',
     author,
     id: siteUrl,
     link: siteUrl,
