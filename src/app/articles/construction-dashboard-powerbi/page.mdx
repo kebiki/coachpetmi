@@ -1,0 +1,155 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+
+export const article = {
+  author: 'Coach Petmi',
+  date: '2024-09-20',
+  title: 'Construire des dashboards Power BI impactants: 7 principes essentiels',
+  description:
+    'Les principaux principes pour concevoir des tableaux de bord Power BI qui communiquent vraiment et influencent les décisions de votre organisation.',
+}
+
+export const metadata = {
+  title: article.title,
+  description: article.description,
+}
+
+export default (props) => <ArticleLayout article={article} {...props} />
+
+Un dashboard ce n'est pas juste un ensemble de graphiques. C'est un outil de communication qui doit aider votre audience à prendre de meilleures décisions. Dans cet article, je vous partage les 7 principes qui distinguent un grand dashboard d'un dashboard ordinaire.
+
+## Principe 1: Hiérarchie d'information claire
+
+Votre oeil doit savoir où regarder en premier.
+
+```
+✅ Bon dashboard:
+- Métrique clé en haut à gauche (grande et visible)
+- Contexte et détails en dessous
+- Sélecteurs de filtre à gauche ou en haut
+
+❌ Mauvais dashboard:
+- Tous les graphiques même taille
+- Mélange de KPI et détails sans ordre apparent
+- Filtres dispersés partout
+```
+
+## Principe 2: Règle 5 secondes
+
+Quelqu'un qui regarde votre dashboard pour la première fois devrait comprendre le message principal en 5 secondes.
+
+**Question à vous poser**: Si je ferme les yeux et je regarde 5 secondes, qu'est-ce que je comprends?
+
+Si la réponse n'est pas claire, redesignez votre dashboard.
+
+## Principe 3: Contexte avant détails
+
+Les utilisateurs ne veulent pas explorer - ils veulent comprendre rapidement.
+
+```
+❌ Mauvaise approche:
+KPI vague "Performance" (80.5%)
+Utilisateur doit cliquer pour comprendre
+
+✅ Bonne approche:
+"Performance en hausse de 12% vs mois dernier"
+"Meilleure région: Nord (95%)"
+"Principale baisse: sud (-5%)"
+```
+
+## Principe 4: Coloration intelligente
+
+Les couleurs doivent véhiculer du sens.
+
+- **Rouge** = alerte, baisse, négatif
+- **Vert** = positif, bon, hausse
+- **Gris** = neutre, sans données
+- **Bleu** = informatif, par défaut
+
+```dax
+// Exemple: coulorer votre KPI selon performance
+Indicateur Couleur :=
+IF([Croissance] > 10%, GREEN,
+   IF([Croissance] > 0%, LIGHT_GREEN,
+   IF([Croissance] > -5%, YELLOW, RED)))
+```
+
+## Principe 5: Un récepteur, un objectif
+
+Chaque dashboard ne doit servir qu'UN utilisateur type ou UN objectif.
+
+**Exemple d'une mauvaise tentative**:
+"Ce dashboard est pour le CFO, le responsable commercial ET l'opérationnel"
+
+❌ Mauvaise idée. Créez 3 dashboards séparés.
+
+**Bonne approche**:
+- Dashboard CFO: KPI financiers, tendances budgétaires
+- Dashboard Commercial: Pipeline, conversion, revenue
+- Dashboard Opérationnel: Efficacité, délais, qualité
+
+## Principe 6: Mise à jour automatique et fiable
+
+Un dashboard inexact ou qui traîne à charger est pire qu'aucun dashboard.
+
+```
+Points à vérifier:
+✅ Le rafraîchissement fonctionne automatiquement?
+✅ Les données sont à jour? (Pas de lag de 3 jours)
+✅ La page charge en < 2 secondes?
+✅ Les alertes envoient les notifications? (si applicable)
+```
+
+## Principe 7: Accessibilité pour tous
+
+Pensez aux daltoniens, aux malvoyants, aux utilisateurs sur téléphone.
+
+```
+✅ Bonnes pratiques:
+- Contraste suffisant (pas noir sur gris)
+- Texte lisible (taille min 12pt)
+- Pas de dépendance exclusive à la couleur
+- Responsive design (fonctionne sur mobile)
+- Pas trop de visualisations simultanées
+
+❌ À éviter:
+- Trop de couleurs différentes
+- Petit texte
+- Graphiques complexes
+- Animation excessive
+```
+
+## Cas réel: Le dashboard de prévention des risques de Saint-Gobain
+
+Lors de mon travail chez Saint-Gobain, j'ai conçu un dashboard pour le suivi des risques industriels. Voici comment j'ai appliqué ces principes:
+
+### L'objectif
+Permettre aux managers de prévention de voir en un coup d'œil les risques les plus critiques et les tendances.
+
+### Les visuels
+1. **KPI principal**: Indice de risque global (0-100) - rouge si > 60
+2. **Heatmap**: Risques par usine et par catégorie
+3. **Tendance temporelle**: Évolution des incidents sur 12 mois
+4. **Table détaillée**: Les 10 incidents les plus critiques (triable, filtrable)
+
+### Le résultat
+- Les managers savaient immédiatement les 3 actions prioritaires
+- Temps de compréhension: < 30 secondes
+- Utilisation quotidienne (vs semaine avant)
+
+## Checkist pour vos dashboards
+
+Avant de publier un dashboard:
+
+- [ ] Puis-je expliquer le message principal en 1 phrase?
+- [ ] Y a-t-il une hiérarchie visuelle claire?
+- [ ] Les colors ont du sens?
+- [ ] Tout fonctionne rapidement (< 2 sec)?
+- [ ] C'est adaptéé pour le téléphone?
+- [ ] Un utilisateur novice comprendrait?
+- [ ] Les données sont à jour?
+
+## Conclusion
+
+Les meilleurs dashboards que j'ai vus ne sont pas les plus compliqués. Ce sont ceux qui font passer un message clair et sont conçus spécifiquement pour UN utilisateur.
+
+**Votre exercice**: Prenez un de vos dashboards actuels. Posez une personne aléatoire devant 5 secondes sans expliquer. Lui demandez de vous dire ce qu'elle a compris. Si ce n'est pas le message que vous vouliez passer... redesignez!

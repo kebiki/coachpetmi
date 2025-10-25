@@ -1,0 +1,103 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+
+export const article = {
+  author: 'Coach Petmi',
+  date: '2024-10-15',
+  title: 'Maîtriser DAX: Les expressions qui transforment vos analyses Power BI',
+  description:
+    'Découvrez les concepts fondamentaux de DAX, apprenez à créer des mesures puissantes et évitez les erreurs les plus courantes dans vos analyses Power BI.',
+}
+
+export const metadata = {
+  title: article.title,
+  description: article.description,
+}
+
+export default (props) => <ArticleLayout article={article} {...props} />
+
+DAX (Data Analysis Expressions) est le cœur battant de Power BI. C'est le langage qui transforme vos données brutes en insights puissants et actionnables. Dans cet article, je vous guide à travers les concepts essentiels que tout analyste Power BI doit maîtriser.
+
+## Comprendre le contexte DAX
+
+L'une des premières choses à comprendre avec DAX est le concept de **contexte**. Contrairement à Excel où vous travaillez avec des cellules individuelles, DAX travaille avec des **contextes de ligne** et des **contextes de filtre**.
+
+```dax
+Ventes Totales := SUM(Ventes[Montant])
+```
+
+Cette mesure simple va additionner tous les montants du tableau Ventes, mais elle respectera tous les filtres appliqués par votre rapport Power BI.
+
+## Les fonctions essentielles
+
+### SUMIF vs CALCULATE
+
+Beaucoup de débutants commencent par utiliser `SUMIF`, mais en réalité, `CALCULATE` est plus puissante et plus flexible:
+
+```dax
+// Méthode simple (à éviter)
+Ventes Q1 := SUMIF(Dates[Mois], "Q1", Ventes[Montant])
+
+// Meilleure approche (recommandée)
+Ventes Q1 := CALCULATE(
+  SUM(Ventes[Montant]),
+  QUARTER(Dates[Date]) = 1
+)
+```
+
+`CALCULATE` vous permet de modifier le contexte de filtre de votre mesure, ce qui la rend beaucoup plus puissante et réutilisable.
+
+## Éviter les erreurs courantes
+
+### 1. Les mesures dans les colonnes calculées
+
+Une erreur fréquente est de mettre des mesures dans des colonnes calculées. Cela peut causer des performances terribles:
+
+```dax
+// ❌ Ne pas faire ceci
+Colonne = [Ventes Totales] / [Nombre de Transactions]
+
+// ✅ Faire plutôt ceci
+Colonne = Ventes[Montant] / 1 // Puis utilisez les mesures dans le rapport
+```
+
+### 2. Les références circulaires
+
+Attention aux références circulaires qui peuvent bloquer votre modèle:
+
+```dax
+// ❌ Problématique
+Mesure A := Mesure B + 1
+Mesure B := Mesure A + 1
+
+// ✅ Correct
+Mesure A := SUM(Table[Colonne]) + Mesure B
+Mesure B := AVERAGE(Table[Autre_Colonne])
+```
+
+## Les patterns qui changent la vie
+
+### Pattern: Year-to-Date (YTD)
+
+```dax
+Ventes YTD := CALCULATE(
+  SUM(Ventes[Montant]),
+  DATESYTD(Dates[Date])
+)
+```
+
+### Pattern: Comparaison d'année en année
+
+```dax
+Ventes PY := CALCULATE(
+  SUM(Ventes[Montant]),
+  DATEADD(Dates[Date], -1, YEAR)
+)
+
+Croissance YoY := [Ventes Totales] / [Ventes PY] - 1
+```
+
+## Conclusion
+
+DAX n'est pas difficile à apprendre - c'est surtout une question de pratique régulière et de compréhension des concepts fondamentaux. Les meilleurs analystes Power BI ne sont pas ceux qui connaissent chaque fonction par cœur, mais ceux qui comprennent comment le contexte fonctionne et comment construire des formules logiques et maintenables.
+
+**Prochain défi**: Prenez un de vos rapports Power BI existants et refactorisez une mesure complexe en utilisant les patterns que vous avez appris ici. Vous serez surpris de voir combien plus clair et plus rapide votre code devient.

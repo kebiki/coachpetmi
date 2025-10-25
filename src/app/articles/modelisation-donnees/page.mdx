@@ -1,0 +1,198 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+
+export const article = {
+  author: 'Coach Petmi',
+  date: '2024-09-10',
+  title: 'Modélisation des données Power BI: Architecture pour le succès',
+  description:
+    'Apprenez à créer une architecture de données solide en Power BI. De la structure star schema aux relations avancées.',
+}
+
+export const metadata = {
+  title: article.title,
+  description: article.description,
+}
+
+export default (props) => <ArticleLayout article={article} {...props} />
+
+Une bonne modélisation est la fondation de tout projet Power BI réussi. J'ai vu des rapports avec le code DAX parfait échouer parce que le modèle de données était mal conçu. Dans cet article, je vous partage comment construire une architecture robuste et scalable.
+
+## L'importance du modèle de données
+
+Avant de créer la première mesure DAX, vous devez passer du temps à réfléchir à votre modèle. Un mauvais modèle signifie:
+
+- ❌ Mesures DAX complexes et difficiles à maintenir
+- ❌ Performance médiocre même sur petit volume
+- ❌ Duplication de code partout
+- ❌ Impossibilité d'ajouter de nouvelles analyses
+
+## Le modèle Star Schema
+
+C'est l'architecture standard pour tout projet BI professionnel:
+
+```
+DIMENSION         FACT          DIMENSION
+┌─────────┐     ┌─────┐      ┌──────────┐
+│  Date   │────→│Sales│←────│ Product  │
+└─────────┘     └─────┘      └──────────┘
+      ↑           ↑
+      └───────────┤
+                  ↓
+          ┌──────────────┐
+          │ Customer     │
+          └──────────────┘
+```
+
+**Tables de fait**: Contiennent les événements (Ventes, Clics, Inscriptions)
+**Tables de dimension**: Contexte pour les événements (Qui? Quoi? Quand?)
+
+## Granularité: Le choix le plus important
+
+À quel niveau vos données de fait doivent-elles être?
+
+```dax
+// Mauvaise granularité: mélange de niveaux
+Table Ventes:
+- Numéro de commande
+- Montant total par commande
+- Montant total par client ET mois
+- Montant total tous clients
+
+// Bonne granularité: une seule ligne = une vente
+Table Ventes:
+- Date
+- ProductID
+- CustomerID
+- Amount: 150.50
+- Quantity: 2
+- Order_Date_Key
+```
+
+## Les relations et leur cardinalité
+
+C'est où beaucoup d'erreurs surviennent. Comprendre 1:1 vs 1:N vs N:N est crucial.
+
+```
+1:N (Plus courante - ✅ Recommandée)
+1 Client → N Commandes
+
+1:1 (Rare, à utiliser uniquement si nécessaire)
+1 Employé → 1 Photo de profil
+
+N:N (Complexe, à éviter - ❌ À moins que vraiment nécessaire)
+N Produits → N Clients (client a plusieurs produits, produit a plusieurs clients)
+```
+
+## Colonnes calculées vs Mesures
+
+Beaucoup débutants confondent les deux:
+
+```dax
+// COLONNE CALCULÉE (créée une fois, immuable)
+Bénéfice = Ventes[Revenue] - Ventes[Cost]
+
+// MESURE (calculée dynamiquement, respecte les filtres)
+Total Bénéfice = SUM(Ventes[Bénéfice])
+
+// Cas réel:
+// Une colonne calculée pour chaque ligne
+Bénéfice Ligne = 150 - 100 = 50 (créée une fois)
+// Une mesure pour total dans le rapport
+Total Bénéfice = SUM([Bénéfice]) = 50 (calculé quand visualisé)
+```
+
+## L'erreur classique: Relations bidirectionnelles
+
+```
+❌ À éviter (performance horrible)
+Customer →← Orders
+Date ←→ Sales
+
+✅ Correct (unidirectionnel)
+Customer → Orders
+Date → Sales
+```
+
+Les relations bidirectionnelles sont rarement nécessaires et causent presque toujours des problèmes de performance.
+
+## Hiérarchies: Organisation logique
+
+Créez des hiérarchies pour l'exploration intuitive:
+
+```
+Hiérarchie Géographique:
+Pays → Région → Ville
+
+Hiérarchie Temporelle:
+Année → Trimestre → Mois → Jour
+
+Dans Power BI:
+Right-click Colonne → Nouvelle hiérarchie
+Ajouter les colonnes dans l'ordre
+```
+
+## Exemple réel: Modèle de prévention des risques
+
+Chez Saint-Gobain, voici le modèle que j'ai construit:
+
+```
+DIMENSION: Usine
+- UsineID (clé)
+- Nom
+- Pays
+- Manager
+
+DIMENSION: Catégorie Risque
+- CategorieID (clé)
+- Nom (Sécurité, Environnement, etc.)
+
+DIMENSION: Date
+- DateID
+- Date
+- Mois
+- Trimestre
+- Année
+
+FACT: Incidents
+- IncidentID (clé)
+- UsineID (FK)
+- CategorieID (FK)
+- DateID (FK)
+- Severité (1-5)
+- Coût
+- NbrePersonnesAffectees
+
+Mesures DAX:
+- Nombre Incidents = COUNT(Incidents[IncidentID])
+- Coût Total = SUM(Incidents[Coût])
+- Incident Grave = CALCULATE([Nombre Incidents], Incidents[Severité] >= 4)
+```
+
+## Checklist avant de charger vos données
+
+- [ ] Mes tables de fait contiennent des événements (une ligne = un événement)
+- [ ] Ma granularité est cohérente (pas mélange de niveaux)
+- [ ] J'ai identifié mes dimensions
+- [ ] Mes relations sont 1:N (sauf exception)
+- [ ] Relations unidirectionnelles
+- [ ] J'ai des clés primaires appropriées
+- [ ] Pas de colonnes "junk" sans sens
+- [ ] Les noms de colonne sont clairs
+- [ ] Les types de données sont corrects
+
+## Performance: Quelques chiffres
+
+Un modèle bien construit peut gérer:
+- **Petits (< 100M lignes)**: Performances excellentes
+- **Moyens (100M - 1B)**: Bonne performance avec optimisation
+- **Énormes (> 1B)**: Nécessite aggregations, partitioning
+
+Un mauvais modèle ralentit déjà à 10M lignes.
+
+## Conclusion
+
+Prenez le temps dès le départ. Une heure passée à bien concevoir votre modèle économise 10 heures de debugging et maintenance plus tard.
+
+**Mon conseil**: Dessinez votre modèle avant de toucher à Power BI. Utilisez un simple papier/crayon ou une app comme Lucidchart. Validez avec un collègue. PUIS chargez les données.
+
+Votre modèle de données est l'architecture. Les mesures DAX sont la décoration. Ne mettez pas la décoration avant de finir l'architecture!

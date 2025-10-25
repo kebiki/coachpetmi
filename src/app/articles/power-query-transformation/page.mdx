@@ -1,0 +1,144 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+
+export const article = {
+  author: 'Coach Petmi',
+  date: '2024-10-08',
+  title: 'Power Query: L\'art et la science de préparer vos données',
+  description:
+    'Apprenez comment Power Query peut transformer vos sources de données complexes en données propres et prêtes à l\'analyse. De la connexion à la transformation avancée.',
+}
+
+export const metadata = {
+  title: article.title,
+  description: article.description,
+}
+
+export default (props) => <ArticleLayout article={article} {...props} />
+
+Power Query est souvent sous-estimé, mais c'est réellement le secret pour construire des solutions Power BI robustes et maintenables. Un analyste qui maîtrise Power Query économise 80% du temps de développement d'un rapport.
+
+## Pourquoi Power Query est crucial
+
+Avant Power Query, les analystes passaient des heures à nettoyer les données manuellement dans Excel. Maintenant, avec Power Query et son langage M, vous pouvez automatiser complètement ce processus.
+
+```
+// Exemple simple: charger et nettoyer des données
+let
+    Source = Excel.Workbook(File.Contents("C:\Data\Sales.xlsx"), null, true),
+    SalesData = Source{[Item="Sales"]}[Data],
+    RemovedHeadersStep = Table.DemoteHeaders(SalesData),
+    ChangedType = Table.TransformColumnTypes(RemovedHeadersStep,{
+        {"Date", type date},
+        {"Amount", type number},
+        {"Region", type text}
+    })
+in
+    ChangedType
+```
+
+## Les transformations essentielles
+
+### 1. Gérer les valeurs nulles
+
+```
+= Table.ReplaceValue(
+    Source,
+    null,
+    0,
+    Replacer.ReplaceValue,
+    {"Amount"}
+  )
+```
+
+### 2. Diviser les colonnes
+
+Souvent, vos données arrivent avec des informations mélangées:
+
+```
+// Diviser "Jean Dupont" en "Jean" et "Dupont"
+= Table.SplitColumn(
+    Source,
+    "NomComplet",
+    Splitter.SplitTextByDelimiter(" "),
+    {"Prenom", "Nom"}
+  )
+```
+
+### 3. Ajouter des colonnes personnalisées
+
+```
+= Table.AddColumn(
+    Source,
+    "Année",
+    each Date.Year([Date]),
+    type number
+  )
+```
+
+## Les erreurs à éviter
+
+### ❌ Ne pas combiner les étapes inutilement
+
+```
+// Mauvais: deux transformations en une
+= Table.TransformColumns(Source, {"Amount", each Number.Round(Number.FromText([Amount]), 2)})
+
+// Bon: une étape par action
+= Table.ReplaceValue(Source, type number, each [Amount])
+Table.TransformColumns(PreviousStep, {"Amount", each Number.Round([Amount], 2)})
+```
+
+### ❌ Utiliser des chemins codés en dur
+
+```
+// ❌ Problématique
+Source = Excel.Workbook(File.Contents("C:\Users\Patricia\Documents\Sales.xlsx"), null, true),
+
+// ✅ Utiliser un paramètre
+let
+    FilePath = "C:\Users\Patricia\Documents\Sales.xlsx",
+    Source = Excel.Workbook(File.Contents(FilePath), null, true)
+in
+    Source
+```
+
+## Patterns avancés
+
+### Pattern: Boucler sur plusieurs fichiers
+
+```
+let
+    FolderPath = "C:\Data\Monthly",
+    Files = File.Contents(FolderPath),
+    Combined = Table.Combine(Files)
+in
+    Combined
+```
+
+### Pattern: Ajouter des métadonnées
+
+```
+let
+    Source = Table.FromRange(Excel.CurrentWorkbook(){[Name="SalesData"]}[Content]),
+    AddDate = Table.AddColumn(Source, "LoadDate", each DateTime.LocalNow()),
+    AddSource = Table.AddColumn(AddDate, "DataSource", each "Excel_Monthly_Report")
+in
+    AddSource
+```
+
+## Le flow de données idéal
+
+Pour une solution Power BI performante, voici le flow que je recommande:
+
+1. **Extraction**: Connectez-vous à votre source (Base de données, Web, etc.)
+2. **Validation**: Vérifiez les types de données et les valeurs manquantes
+3. **Transformation**: Créez les colonnes dont vous avez besoin, déduplications
+4. **Enrichissement**: Ajoutez du contexte (dates, catégories, etc.)
+5. **Consolidation**: Combinez les tables si nécessaire
+6. **Export**: Chargez dans Power BI ou une table intermédiaire
+
+## Conclusion
+
+Power Query n'est pas seulement un outil pour nettoyer des données - c'est le fondement de votre architecture Power BI. Investir du temps à maîtriser Power Query et le langage M vous permet de créer des solutions scalables qui s'adaptent quand vos données changent.
+
+**Conseil pratique**: Documentez chaque étape de votre Power Query. Utilisez des noms clairs pour vos étapes. Cela facilite la maintenance et aide les autres à comprendre votre logique.

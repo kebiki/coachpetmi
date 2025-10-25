@@ -1,0 +1,138 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+
+export const article = {
+  author: 'Coach Petmi',
+  date: '2024-09-30',
+  title: 'Réussir l\'examen PL 300: Guide complet de préparation',
+  description:
+    'Stratégie complète pour réussir votre certification Microsoft Power BI PL 300. Sujets clés, erreurs courantes et plan d\'étude efficace.',
+}
+
+export const metadata = {
+  title: article.title,
+  description: article.description,
+}
+
+export default (props) => <ArticleLayout article={article} {...props} />
+
+L'examen PL 300 est la certification officielle de Microsoft pour Power BI. Dans cet article, je partage la stratégie que j'utilise pour coach mes étudiants vers 100% de réussite.
+
+## Les 5 domaines clés de l'examen
+
+### 1. Modélisation des données (25-30%)
+
+C'est le domaine le plus important. Vous devez comprendre:
+
+- **Les relations**: Comment créer et gérer les relations entre tables
+- **Les tables de dimension et de fait**: Comprendre la structure star schema
+- **La granularité des données**: À quel niveau vos données doivent-elles être
+
+```
+Conseil: Pratiquez en créant un modèle à partir de zéro. Commencez simple,
+puis ajoutez de la complexité progressivement.
+```
+
+### 2. Requêtes DAX (25-30%)
+
+Les fonctions DAX les plus testées:
+
+- `SUM()`, `AVERAGE()`, `COUNT()` - Les basiques
+- `CALCULATE()` - LA fonction clé pour modifier les contextes
+- `FILTER()` - Pour créer des sous-ensembles conditionnels
+- Les fonctions temporelles: `DATEADD()`, `DATESYTD()`, etc.
+
+### 3. Visualisation et rapports (20-25%)
+
+- Types de visuels appropriés pour différents scénarios
+- Formatage et interactivité
+- Slicers et filtres
+- Bookmarks et boutons interactifs
+
+### 4. Power Query (10-15%)
+
+- Connexion aux sources de données
+- Étapes de transformation
+- Le langage M pour les transformations avancées
+- Gestion des erreurs et des valeurs nulles
+
+### 5. Déploiement et gestion (5-10%)
+
+- Espaces de travail et permissions
+- Rafraîchissement des données
+- Sécurité au niveau des lignes (RLS)
+- Capacité et performance
+
+## Le plan d'étude que je recommande
+
+### Semaine 1-2: Fondamentaux
+- Créez 3-4 modèles simples à partir de fichiers Excel
+- Pratiquez les relationships et la cardinalité
+- Comprenez les types de données
+
+### Semaine 3-4: DAX en profondeur
+- Créez 10 mesures simples
+- Puis 10 mesures moyennes (avec CALCULATE)
+- Enfin 5 mesures avancées (avec FILTER, contexte complexe)
+
+### Semaine 5-6: Power Query et visualisation
+- Pratiquez 5 transformations Power Query différentes
+- Créez 3 rapports complets avec visualisations variées
+- Testez les interactions et filtres croisés
+
+### Semaine 7-8: Révision et tests blancs
+- Prenez les tests blancs officiels Microsoft Learn
+- Identifiez vos faiblesses
+- Focalisez-vous sur ces domaines
+
+## Les erreurs les plus courantes à l'examen
+
+### ❌ Confondre SUM et SUMX
+
+```dax
+// Ceci va doubler votre somme s'il y a des relations
+Ventes := SUM(Ventes[Montant])
+
+// C'est correct quand vos données sont déjà au bon niveau de granularité
+Ventes := SUMX(FactVentes, FactVentes[Montant] * FactVentes[Quantité])
+```
+
+### ❌ Oublier le contexte de filtre
+
+```dax
+// Ceci ignore les filtres du rapport
+Ventes Totales := SUM(Ventes[Montant])
+
+// C'est correct - respecte les filtres
+Ventes Filtrées := CALCULATE(SUM(Ventes[Montant]), ALLEXCEPT(Ventes, Ventes[ProductID]))
+```
+
+### ❌ Ignorer la performance
+
+Trop de visibles sur une page, des mesures non optimisées, des relations bidirectionnelles... tout cela ralentit votre rapport.
+
+## Mes conseils pour le jour de l'examen
+
+1. **Lisez attentivement chaque question** - Les questions d'examen sont précises. Relisez 2x.
+
+2. **Gérez votre temps** - 60 questions en 120 minutes. Vous avez 2 minutes par question.
+
+3. **Commencez par ce que vous maîtrisez** - Cela crée du momentum et de la confiance.
+
+4. **Revenez sur les questions difficiles** - Ne restez pas bloqué. Passez et revenez après.
+
+5. **Vérifiez vos réponses** - Si vous avez du temps, relisez vos réponses critiques.
+
+## Les ressources de préparation essentielles
+
+- **Microsoft Learn Path "PL 300"** - Gratuit et officiel
+- **Exercices pratiques "Hands-on labs"** - Importants pour l'expérience pratique
+- **Tests de pratique officiels** - Essentiels pour évaluer votre préparation
+- **Documentation Power BI officielle** - Votre référence
+
+## Ma philosophie de la certification
+
+Une certification n'est pas juste un badge. C'est la preuve que vous maîtrisez réellement Power BI. Quand vous passez l'examen PL 300, vous ne devez pas "espérer réussir" - vous devez SAVOIR que vous avez les compétences.
+
+Pour atteindre cet état, pratiquez avec des vrais scénarios d'entreprise. Pas seulement des exercices d'école. Demandez-vous "Comment utiliserais-je cela dans un vrai projet client?"
+
+**Bonne chance! Et n'hésitez pas à me contacter si vous avez besoin de coaching personnalisé.**
