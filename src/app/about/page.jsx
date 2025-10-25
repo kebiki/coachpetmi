@@ -84,18 +84,18 @@ export default function About() {
               Suivre sur Instagram
             </SocialLink>
             <SocialLink
-              href="mailto:patriciapetmi14@gmail.com"
+              href="mailto:hi@coachpetmi.com"
               icon={MailIcon}
               className="mt-8 border-t border-zinc-100 pt-8 dark:border-zinc-700/40"
             >
-              patriciapetmi14@gmail.com
+              hi@coachpetmi.com
             </SocialLink>
             <SocialLink
-              href="tel:+33761676259"
+              href="tel:+33123456789"
               icon={MailIcon}
               className="mt-4"
             >
-              +33 7 61 67 62 59
+              +33 1 23 45 67 89
             </SocialLink>
           </ul>
         </div>
